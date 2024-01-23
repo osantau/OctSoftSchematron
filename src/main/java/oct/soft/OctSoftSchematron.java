@@ -4,13 +4,9 @@
 
 package oct.soft;
 
+import ch.qos.logback.core.CoreConstants;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import oct.soft.model.ValidationKind;
 import oct.soft.model.ValidationResult;
 import oct.soft.validator.ValidateXML;
@@ -23,22 +19,12 @@ public class OctSoftSchematron {
 
     public static void main(String[] args) throws Exception {                 
         Javalin app = Javalin.create(config->{
-            config.defaultContentType="application/json";                 
+            config.defaultContentType="application/json";              
          });
-        app.attribute("xmlValidator", new ValidateXML());                        
-        app.before("/validate/*", ctx-> {
-            List<DayOfWeek> dowList = new ArrayList<>(Arrays.asList(DayOfWeek.MONDAY,DayOfWeek.WEDNESDAY,DayOfWeek.FRIDAY));
-            LocalDate ld = LocalDate.now();
-             ValidateXML xmlValidator =(ValidateXML) ctx.appAttribute("xmlValidator");
-             if(xmlValidator == null || dowList.contains(ld.getDayOfWeek())){
-                 xmlValidator = new ValidateXML();
-                 app.attribute("xmlValidator",xmlValidator);
-             } 
-        });
+        ValidateXML xmlValidator = new ValidateXML();           
         app.post("/validate/{tipValidare}",(Context ctx)->{
             String tipValidare = ctx.pathParam("tipValidare");
-            String xmlContent = ctx.body();
-            ValidateXML xmlValidator =(ValidateXML) ctx.appAttribute("xmlValidator");            
+            String xmlContent = ctx.body();           
             ValidationResult validationResult = new ValidationResult();
             switch (tipValidare) {
                 case "efactura":

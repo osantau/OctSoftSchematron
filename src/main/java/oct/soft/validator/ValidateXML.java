@@ -70,15 +70,14 @@ public class ValidateXML {
         return validationResult;
     }
     
-    private  ISchematronResource getEFacturaResSch() {
-        System.out.println("Initializez !!!");
+    private  ISchematronResource getEFacturaResSch() {       
         if (eFacturaResSch == null) {            
             eFacturaResSch = SchematronResourcePure.fromFile("efactura/EN16931-CIUS_RO-UBL-validation.sch");            
         }
         return eFacturaResSch;
     }
     
-    private  ISchematronResource getETransportResSch() {
+    private  ISchematronResource getETransportResSch() {        
         if (eTransportResSch == null) {
             eTransportResSch = SchematronResourcePure.fromFile("etransport/eTransport-validation_v.2.0.1_08022022.sch");            
         }
