@@ -31,10 +31,9 @@ public class OctSoftSchematron {
             LocalDate ld = LocalDate.now();
              ValidateXML xmlValidator =(ValidateXML) ctx.appAttribute("xmlValidator");
              if(xmlValidator == null || dowList.contains(ld.getDayOfWeek())){
-                 System.out.println("Reinnoiessc !");
                  xmlValidator = new ValidateXML();
                  app.attribute("xmlValidator",xmlValidator);
-             }
+             } 
         });
         app.post("/validate/{tipValidare}",(Context ctx)->{
             String tipValidare = ctx.pathParam("tipValidare");
@@ -43,10 +42,10 @@ public class OctSoftSchematron {
             ValidationResult validationResult = new ValidationResult();
             switch (tipValidare) {
                 case "efactura":
-                    validationResult =xmlValidator.validateXml(xmlContent,ValidationKind.E_FACTURA);
+                    validationResult = xmlValidator.validateXml(xmlContent,ValidationKind.E_FACTURA);
                     break;
                 case "etransport":
-                    validationResult=xmlValidator.validateXml(xmlContent,ValidationKind.E_TRANSPORT);
+                    validationResult = xmlValidator.validateXml(xmlContent,ValidationKind.E_TRANSPORT);
                     break;
                 default:
                     validationResult.setStatus(ValidationResult.NOT_OK);

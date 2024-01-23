@@ -52,8 +52,8 @@ public class ValidateXML {
                 if (!fAsserts.isEmpty()) {                    
                     fAsserts.stream().forEach(fa -> {
                         IErrorLevel errLevel = fa.getFlag();
-                        if (errLevel.isError()) {
-                            validationResult.getErrors().add(fa.getText());
+                        if (errLevel.isError()) {                            
+                            validationResult.getErrors().add("codEroare="+fa.getID()+"; localizare="+fa.getLocation() +"; eroare="+fa.getText());
                             errCnt.getAndIncrement();
                         }                        
                     });
