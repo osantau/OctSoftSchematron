@@ -74,6 +74,11 @@
                             <directory>${basedir}/etransport</directory>                            
                             <filtering>true</filtering>
                         </resource>
+                         <resource>
+                            <targetPath>${basedir}/target/config</targetPath>
+                            <directory>${basedir}/config</directory>                            
+                            <filtering>true</filtering>
+                        </resource>
                     </resources>                    
                 </configuration>
             </plugin>
