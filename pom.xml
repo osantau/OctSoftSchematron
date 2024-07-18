@@ -64,11 +64,11 @@
                             <directory>${basedir}/efactura</directory>  
                             <filtering>true</filtering>                                                   
                         </resource>
-                        <resource>
+                    <!--<resource>
                             <targetPath>${basedir}/target/efactura-ro16931-ubl-1.0.8</targetPath>
                             <directory>${basedir}/efactura-ro16931-ubl-1.0.8</directory>                            
                             <filtering>true</filtering>
-                        </resource>
+                        </resource> -->
                         <resource>
                             <targetPath>${basedir}/target/etransport</targetPath>
                             <directory>${basedir}/etransport</directory>                            

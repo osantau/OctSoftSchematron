@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 	Validate UBL Invoice and UBL Credit Note(XML file) for compliance with the  national rules RO_CIUS
-	Schematron version 1.0.9 - Last update: 2024-05-78:
-		- Debug to correct problems regarding date validation and negative values for item net price
 	Schematron version 1.0.8 - Last update: 2022-10-18:
    	- modify Syntax of Specification identifier element (BT-24)(RO-MAJOR-MINOR-PATCH-VERSION value = 1.0.1);
    	- modify allowed maximum number of characters for BT-1, BT-12, BT-13, BT-14, BT-15, BT-16, BT-17, BT-18, BT-25 and BT-122(200)
@@ -12,8 +10,26 @@
    	- eliminate rules BR-RO-L030 and BR-RO-A999
 	RO_CIUS version 1.0.1 - Last update: 2022-10-18 
 -->
-
-<pattern xmlns="http://purl.oclc.org/dsdl/schematron" id="ROmodel">
+<schema xmlns="http://purl.oclc.org/dsdl/schematron"
+	xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+	xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+	queryBinding="xslt2"
+	defaultPhase="roefactura-model">
+	<title>Schematron Version 1.0.8 - CIUS-RO version 1.0.1 compatible - UBL - Invoice</title>
+	<ns prefix="ext" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" />
+	<ns prefix="cbc" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" />
+	<ns prefix="cac" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" />
+	<ns prefix="qdt" uri="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDataTypes-2" />
+	<ns prefix="udt" uri="urn:oasis:names:specification:ubl:schema:xsd:UnqualifiedDataTypes-2" />
+	<ns prefix="cn" uri="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2" />
+	<ns prefix="ubl" uri="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" />
+	<ns prefix="xs"  uri="http://www.w3.org/2001/XMLSchema" />
+	
+	<phase id="roefactura-model">
+		<active pattern="ubl-pattern" />
+	</phase>
+	<!-- Validate UBL Invoice and UBL Credit Notes according to the  national rules RO_CIUS -->
+	<pattern id="ubl-pattern">
 <!-- Declaring global variables (in XSLT speak) -->
 	<!-- Syntax of Specification identifier element (BT-24) according to the RO_CIUS -->
 	<let name="RO-MAJOR-MINOR-PATCH-VERSION" value="'1.0.1'"/> 
@@ -25,89 +41,14 @@
 	<!-- ISO 3166-2:RO and SECTOR Codelists (applicable for countryCode = "RO") -->
 	<let name="ISO-3166-RO-CODES" value="('RO-AB','RO-AG','RO-AR','RO-B','RO-BC','RO-BH','RO-BN','RO-BR','RO-BT','RO-BV','RO-BZ','RO-CJ','RO-CL','RO-CS','RO-CT', 'RO-CV', 'RO-DB', 'RO-DJ', 'RO-GJ', 'RO-GL', 'RO-GR', 'RO-HD', 'RO-HR' , 'RO-IF', 'RO-IL', 'RO-IS', 'RO-MH', 'RO-MM', 'RO-MS', 'RO-NT', 'RO-OT', 'RO-PH', 'RO-SB', 'RO-SJ', 'RO-SM', 'RO-SV', 'RO-TL', 'RO-TM', 'RO-TR', 'RO-VL', 'RO-VN', 'RO-VS')"/>
 	<let name="SECTOR-RO-CODES" value="('SECTOR1', 'SECTOR2', 'SECTOR3', 'SECTOR4', 'SECTOR5', 'SECTOR6')"/>
-	
-	<!-- date validation for  yyyy-mm-dd -->
-	
-	<rule context="cbc:IssueDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
+	<!-- invoice type code constrains(BT-3) -->
+	<rule flag="fatal" context="cbc:InvoiceTypeCode | cbc:CreditNoteTypeCode">
+		<assert test="(self::cbc:InvoiceTypeCode and ((not(contains(normalize-space(.), ' ')) and contains(' 380 384 389 751 ', concat(' ', normalize-space(.), ' '))))) or (self::cbc:CreditNoteTypeCode and ((not(contains(normalize-space(.), ' ')) and contains(' 381 ', concat(' ', normalize-space(.), ' ')))))" 
 			flag="fatal"
-			id="BR-RO-DT001"
-			>[BR-RO-DT001]-Un element de tip data (BT-2, BT-27) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-2, BT-27) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<rule context="cbc:TaxPointDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
-			flag="fatal"
-			id="BR-RO-DT002"
-			>[BR-RO-DT002]-Un element de tip data (BT-7) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-7) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<rule context="cbc:DueDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
-			flag="fatal"
-			id="BR-RO-DT003"
-			>[BR-RO-DT003]-Un element de tip data (BT-9) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-9) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<rule context="cbc:PaymentDueDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
-			flag="fatal"
-			id="BR-RO-DT003_CN"
-			>[BR-RO-DT003-CN]-Un element de tip data (BT-9) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-9) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<rule context="cbc:ActualDeliveryDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
-			flag="fatal"
-			id="BR-RO-DT004"
-			>[BR-RO-DT004]-Un element de tip data (BT-72) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-73, BT-134) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<rule context="cbc:StartDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
-			flag="fatal"
-			id="BR-RO-DT005"
-			>[BR-RO-DT005]-Un element de tip data (BT-73, BT-134) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-73, BT-134) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<rule context="cbc:EndDate">
-		<assert test="string-length(text()) = 10 and (string(.) castable as xs:date)"
-			flag="fatal"
-			id="BR-RO-DT006"
-			>[BR-RO-DT006]-Un element de tip data (BT-74, BT-135) trebuie sa respecte formatul YYYY-MM-DD
-			#A date (BT-74, BT-135) MUST be formatted YYYY-MM-DD. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	<!-- check for negative PriceAmount-->
-	<rule context="cbc:PriceAmount">	
-		<assert 
-			test="(.) >=0"
-			flag="fatal" 
-			id="BR-27" 		
-			>[BR-27]-Preţul net al articolului (BT-146) trebuie să NU fie negativ.
-			#The Item net price (BT-146) shall NOT be negative. (<name/> = '<value-of select="."/>')</assert>
-	</rule>
-	
-	
-	<!-- invoice type code constrains(BT-3) modify syntax 13052024-->
-	<rule context="cbc:InvoiceTypeCode">
-		<assert test="(. and ((not(contains(normalize-space(.), ' ')) and contains(' 380 384 389 751 ', concat(' ', normalize-space(.), ' ')))))" 
-			flag="fatal"
-			id="BR-RO-020_1"  
+			id="BR-RO-020"  
 			>[BR-RO-020]-Codul tipului facturii (BT-3) trebuie sa fie unul dintre urmatoarele coduri din lista de coduri UNTDID 1001: 380 (Factura), 389 (Autofactura), 384 (Factura corectata), 381 (Nota de creditare), 751 (Factura — informatii în scopuri contabile).
 			#The invoice type code (BT-3) must be one of the following codes in the UNTDID 1001 code list: 380 (Invoice), 389 (Self-invoice), 384 (Corrected invoice), 381 (Credit note), 751 (Invoice - information for accounting purposes).</assert>
 	</rule>
-	
-	<rule context="cbc:CreditNoteTypeCode">
-		<assert test="(. and ((not(contains(normalize-space(.), ' ')) and contains(' 381 ', concat(' ', normalize-space(.), ' ')))))" 
-			flag="fatal"
-			id="BR-RO-020_2"  
-			>[BR-RO-020]-Codul tipului facturii (BT-3) trebuie sa fie unul dintre urmatoarele coduri din lista de coduri UNTDID 1001: 380 (Factura), 389 (Autofactura), 384 (Factura corectata), 381 (Nota de creditare), 751 (Factura — informatii în scopuri contabile).
-			(<name/> = '<value-of select="."/>')
-			#The invoice type code (BT-3) must be one of the following codes in the UNTDID 1001 code list: 380 (Invoice), 389 (Self-invoice), 384 (Corrected invoice), 381 (Credit note), 751 (Invoice - information for accounting purposes).</assert>
-	</rule>
-	
-	
-	
 	<!-- specification identifier(BT-24) constrains -->
 	<rule context="/ubl:Invoice | /cn:CreditNote">
 			<assert test="cbc:CustomizationID = $RO-CIUS-ID" 
@@ -274,13 +215,12 @@
 				id="BR-RO-L1015" 
 				>[BR-RO-L100]-Numarul maxim permis de caractere pentru Adresa de livrare - Linia 3 (BT-165) este 100.
 							#The allowed maximum number of characters for the Deliver to address line 3 (BT-165) is 100.</assert>
-				<!--
-			 <assert test="string-length(normalize-space(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReason)) &lt;= 100"
+				
+			<assert test="string-length(normalize-space(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReason)) &lt;= 100"
 				flag="fatal" 
 				id="BR-RO-L1019" 
 				>[BR-RO-L100]-Numarul maxim permis de caractere pentru Motivul scutirii de TVA (BT-120) este 100.
-							#The allowed maximum number of characters for the VAT exemption reason text (BT-120) is 100.</assert>	
-				-->
+							#The allowed maximum number of characters for the VAT exemption reason text (BT-120) is 100.</assert>		
 			<assert test="string-length(normalize-space(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName)) &lt;= 150"
 				flag="fatal" 
 				id="BR-RO-L151" 
@@ -684,16 +624,7 @@
 			#The allowed maximum number of characters for the Preceding Invoice number (BT-25) is 200.</assert>
 		
 	</rule>
-	
-	<rule context="/ubl:Invoice/cac:TaxTotal/cac:TaxSubtotal | /ubl:CreditNote/cac:TaxTotal/cac:TaxSubtotal">
-		<assert test="string-length(normalize-space(cbc:TaxExemptionReason)) &lt;= 100"
-				flag="fatal" 
-				id="BR-RO-L1019" 
-				>[BR-RO-L100]-Numarul maxim permis de caractere pentru Motivul scutirii de TVA (BT-120) este 100.
-							#The allowed maximum number of characters for the VAT exemption reason text (BT-120) is 100.</assert>	
-		
-	</rule>
-	
 </pattern>
+</schema>
 
 
