@@ -8,8 +8,10 @@ import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import java.io.StringReader;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.transform.stream.StreamSource;
+import oct.soft.config.ConfigUtil;
 import oct.soft.model.ValidationKind;
 import oct.soft.model.ValidationResult;
 
@@ -21,8 +23,11 @@ public class ValidateXML {
     
     private  ISchematronResource eFacturaResSch = null;
     private  ISchematronResource eTransportResSch = null;
+    private Properties appProp = null;
     
     public ValidateXML() {        
+        appProp = ConfigUtil.getConfig();
+        System.out.println(appProp);
         eFacturaResSch = getEFacturaResSch();
         eTransportResSch = getETransportResSch();
     }
@@ -72,14 +77,14 @@ public class ValidateXML {
     
     private  ISchematronResource getEFacturaResSch() {       
         if (eFacturaResSch == null) {            
-            eFacturaResSch = SchematronResourcePure.fromFile("efactura/EN16931-CIUS_RO-UBL-validation.sch");            
+            eFacturaResSch = SchematronResourcePure.fromFile(appProp.getProperty("efacturaSchema"));            
         }
         return eFacturaResSch;
     }
     
     private  ISchematronResource getETransportResSch() {        
         if (eTransportResSch == null) {
-            eTransportResSch = SchematronResourcePure.fromFile("etransport/eTransport-validation_v.2.0.1_08022022.sch");            
+            eTransportResSch = SchematronResourcePure.fromFile("etransportSchema");            
         }
         return eTransportResSch;
     }

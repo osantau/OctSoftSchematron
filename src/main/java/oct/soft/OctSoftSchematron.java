@@ -13,6 +13,7 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.Properties;
+import oct.soft.config.ConfigUtil;
 import oct.soft.model.ValidationKind;
 import oct.soft.model.ValidationResult;
 import oct.soft.validator.ValidateXML;
@@ -24,8 +25,7 @@ import oct.soft.validator.ValidateXML;
 public class OctSoftSchematron {
 
     public static void main(String[] args) throws Exception {   
-        Properties appProp = new Properties();
-        appProp.load(new FileInputStream("config/app.properties"));
+        Properties appProp = ConfigUtil.getConfig();       
         int port = Integer.valueOf(appProp.getProperty("port")).intValue();
         Javalin app = Javalin.create(config->{
             config.defaultContentType="application/json";              
