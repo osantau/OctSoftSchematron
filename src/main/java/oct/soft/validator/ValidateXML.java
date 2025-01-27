@@ -84,7 +84,7 @@ public class ValidateXML {
     
     private  ISchematronResource getETransportResSch() {        
         if (eTransportResSch == null) {
-            eTransportResSch = SchematronResourcePure.fromFile("etransportSchema");            
+            eTransportResSch = SchematronResourcePure.fromFile(appProp.getProperty("etransportSchema"));            
         }
         return eTransportResSch;
     }
