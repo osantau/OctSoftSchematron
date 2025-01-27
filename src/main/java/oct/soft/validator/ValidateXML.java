@@ -26,8 +26,7 @@ public class ValidateXML {
     private Properties appProp = null;
     
     public ValidateXML() {        
-        appProp = ConfigUtil.getConfig();
-        System.out.println(appProp);
+        appProp = ConfigUtil.getConfig();        
         eFacturaResSch = getEFacturaResSch();
         eTransportResSch = getETransportResSch();
     }
