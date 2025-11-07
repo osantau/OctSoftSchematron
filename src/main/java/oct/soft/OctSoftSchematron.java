@@ -17,23 +17,27 @@ import oct.soft.config.ConfigUtil;
 import oct.soft.model.ValidationKind;
 import oct.soft.model.ValidationResult;
 import oct.soft.validator.ValidateXML;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  *
  * @author Octavian
  */
 public class OctSoftSchematron {
-
-    public static void main(String[] args) throws Exception {   
+private static final Logger logger = LoggerFactory.getLogger(OctSoftSchematron.class);
+    public static void main(String[] args) {   
         Properties appProp = ConfigUtil.getConfig();       
         int port = Integer.valueOf(appProp.getProperty("port")).intValue();
+         String UPLOAD_PATH = appProp.getProperty("upload_folder");
+         logger.info("Configuration loaded. Port: {}", port);
         Javalin app = Javalin.create(config->{
             config.defaultContentType="application/json";              
          });
         ValidateXML xmlValidator = new ValidateXML(); 
         app.get("/", ctx->{
         StringBuilder  sb = new StringBuilder();
-        try{
+        try {
          OperatingSystemMXBean operatingSystemBean = ManagementFactory.getOperatingSystemMXBean();
         sb.append("<p>Operating system:"
                     + "<br/>name: " + operatingSystemBean.getName()
@@ -56,6 +60,7 @@ public class OctSoftSchematron {
         }
             catch(Exception ex)
                     {
+                    logger.error("Failded to get system info");
                     sb.append("<p>Failded to get system info</p>");
                     }
         ctx.html(sb.toString());
@@ -78,6 +83,9 @@ public class OctSoftSchematron {
             }
             ctx.json(validationResult);
         });
+        
+        
+        
         app.start(port);
     }
 }
